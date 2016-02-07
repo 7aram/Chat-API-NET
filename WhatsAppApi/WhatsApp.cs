@@ -98,7 +98,7 @@ namespace WhatsAppApi
                     extension = "jpg";
                     break;
             }
-            
+
             //create hash
             string filehash = string.Empty;
             using(HashAlgorithm sha = HashAlgorithm.Create("sha256"))
@@ -171,13 +171,13 @@ namespace WhatsAppApi
             if (response != null && !String.IsNullOrEmpty(response.url))
             {
                 //send message
-                FMessage msg = new FMessage(to, true) { 
-                    media_wa_type = FMessage.Type.Video, 
-                    media_mime_type = response.mimetype, 
-                    media_name = response.url.Split('/').Last(), 
-                    media_size = response.size, 
-                    media_url = response.url, 
-                    media_duration_seconds = response.duration 
+                FMessage msg = new FMessage(to, true) {
+                    media_wa_type = FMessage.Type.Video,
+                    media_mime_type = response.mimetype,
+                    media_name = response.url.Split('/').Last(),
+                    media_size = response.size,
+                    media_url = response.url,
+                    media_duration_seconds = response.duration
                 };
                 return msg;
             }
@@ -228,13 +228,13 @@ namespace WhatsAppApi
             if (response != null && !String.IsNullOrEmpty(response.url))
             {
                 //send message
-                FMessage msg = new FMessage(to, true) { 
-                    media_wa_type = FMessage.Type.Audio, 
-                    media_mime_type = response.mimetype, 
-                    media_name = response.url.Split('/').Last(), 
-                    media_size = response.size, 
-                    media_url = response.url, 
-                    media_duration_seconds = response.duration 
+                FMessage msg = new FMessage(to, true) {
+                    media_wa_type = FMessage.Type.Audio,
+                    media_mime_type = response.mimetype,
+                    media_name = response.url.Split('/').Last(),
+                    media_size = response.size,
+                    media_url = response.url,
+                    media_duration_seconds = response.duration
                 };
                 return msg;
             }
@@ -379,7 +379,7 @@ namespace WhatsAppApi
             }, children.ToArray());
             this.SendNode(node);
         }
-        
+
         public void SendActive()
         {
             var node = new ProtocolTreeNode("presence", new[] { new KeyValue("type", "active") });
@@ -448,7 +448,7 @@ namespace WhatsAppApi
 
         protected void SendChatState(string to, string type)
         {
-            var node = new ProtocolTreeNode("chatstate", new[] { new KeyValue("to", WhatsApp.GetJID(to)) }, new[] { 
+            var node = new ProtocolTreeNode("chatstate", new[] { new KeyValue("to", WhatsApp.GetJID(to)) }, new[] {
                 new ProtocolTreeNode(type, null)
             });
             this.SendNode(node);
@@ -469,7 +469,7 @@ namespace WhatsAppApi
             var node = new ProtocolTreeNode("iq",
                                             new KeyValue[]
                                                 {
-                                                    new KeyValue("id", id), 
+                                                    new KeyValue("id", id),
                                                     new KeyValue("type", "get"),
                                                     new KeyValue("to", "s.whatsapp.net"),
                                                     new KeyValue("xmlns", "urn:xmpp:whatsapp:account")
@@ -742,8 +742,8 @@ namespace WhatsAppApi
         public void SendPing()
         {
             string id = TicketCounter.MakeId();
-            var child = new ProtocolTreeNode("ping", new[] { new KeyValue("xmlns", "w:p") });
-            var node = new ProtocolTreeNode("iq", new[] { new KeyValue("id", id), new KeyValue("type", "get") }, child);
+            var child = new ProtocolTreeNode("ping", null);
+            var node = new ProtocolTreeNode("iq", new[] { new KeyValue("id", id), new KeyValue("xmlns", "w:p"), new KeyValue("type", "get"), new KeyValue("to", "s.whatsapp.net") }, child);
             this.SendNode(node);
         }
 
@@ -925,7 +925,7 @@ namespace WhatsAppApi
 
         public void SendSetPrivacySetting(VisibilityCategory category, VisibilitySetting setting)
         {
-            ProtocolTreeNode node = new ProtocolTreeNode("iq", new[] { 
+            ProtocolTreeNode node = new ProtocolTreeNode("iq", new[] {
                 new KeyValue("to", "s.whatsapp.net"),
                 new KeyValue("id", TicketCounter.MakeId()),
                 new KeyValue("type", "set"),
@@ -962,7 +962,7 @@ namespace WhatsAppApi
             {
                 DateTime now = DateTime.Now;
                 nodeArray = (from @group in groups
-                             select new ProtocolTreeNode("item", new[] 
+                             select new ProtocolTreeNode("item", new[]
                 { new KeyValue("jid", @group.Jid),
                     new KeyValue("notify", @group.Enabled ? "1" : "0"),
                     new KeyValue("mute", string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0}", new object[] { (!@group.MuteExpiry.HasValue || (@group.MuteExpiry.Value <= now)) ? 0 : ((int) (@group.MuteExpiry.Value - now).TotalSeconds) })) })).ToArray<ProtocolTreeNode>();
@@ -973,9 +973,9 @@ namespace WhatsAppApi
         protected static ProtocolTreeNode GetMessageNode(FMessage message, ProtocolTreeNode pNode, bool hidden = false)
         {
 			Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-            return new ProtocolTreeNode("message", new[] { 
-                new KeyValue("to", message.identifier_key.remote_jid), 
-                new KeyValue("type", message.media_wa_type == FMessage.Type.Undefined?"text":"media"), 
+            return new ProtocolTreeNode("message", new[] {
+                new KeyValue("to", message.identifier_key.remote_jid),
+                new KeyValue("type", message.media_wa_type == FMessage.Type.Undefined?"text":"media"),
                 new KeyValue("id", message.identifier_key.id),
 				new KeyValue("t",unixTimestamp.ToString())
 			},
